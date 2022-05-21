@@ -40,7 +40,7 @@ def find_bars(string):
     return [m.start() for m in re.finditer(r"\|", string)]
 
 
-def middle(phonemes_option, graphemes_option, match):
+def get_example(phonemes_option, graphemes_option, match):
     grapheme_idxs = [0] + [bar_idx + 1 for bar_idx in find_bars(graphemes_option)]
     phoneme_idxs = [0] + [bar_idx + 1 for bar_idx in find_bars(phonemes_option)]
     subword_start_idx = next(idx for idx in phoneme_idxs if idx >= match.start())
@@ -64,15 +64,15 @@ def perform_sttretsch(phonemes, max_len, table=parse_table()):
         for phonemes_option in table.keys():
             for match in re.finditer(pattern, phonemes_option):
                 graphemes_option = table[phonemes_option]
-                subword = middle(phonemes_option, graphemes_option, match)
-                filtered = lowercase_only(subword)
-                if len(filtered) >= best_len:
-                    if len(filtered) > best_len:
+                example_ = get_example(phonemes_option, graphemes_option, match)
+                example = lowercase_only(example_)
+                if len(example) >= best_len:
+                    if len(example) > best_len:
                         best_options.clear()
-                    best_options[filtered] += 1
-                    best_len = len(filtered)
-                    if filtered not in as_in:
-                        as_in[filtered] = lowercase_only(graphemes_option)
+                    best_options[example] += 1
+                    best_len = len(example)
+                    if example not in as_in:
+                        as_in[example] = lowercase_only(graphemes_option)
         best_option = sorted(
             best_options.items(), key=lambda item: item[1], reverse=True
         )[0][0]
@@ -81,7 +81,7 @@ def perform_sttretsch(phonemes, max_len, table=parse_table()):
             (
                 len(best_option + best_rest) + PREFER_BIGGER_STEPS * step_len,
                 best_option + best_rest,
-                best_option + " as in " + as_in[best_option],
+                "'{}' as in '{}'".format(best_option, as_in[best_option]),
                 rest_as_ins,
             )
         )
