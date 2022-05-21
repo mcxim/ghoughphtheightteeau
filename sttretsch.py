@@ -6,6 +6,8 @@ from string import ascii_lowercase
 from collections import defaultdict
 import sys
 
+PREFER_BIGGER_STEPS = 0.3
+
 
 def lowercase_only(string):
     return "".join(char for char in string if char in ascii_lowercase)
@@ -77,13 +79,14 @@ def perform_sttretsch(phonemes, max_len, table=parse_table()):
         best_rest, rest_as_ins = perform_sttretsch(phonemes[step_len:], max_len)
         options.append(
             (
+                len(best_option + best_rest) + PREFER_BIGGER_STEPS * step_len,
                 best_option + best_rest,
                 best_option + " as in " + as_in[best_option],
                 rest_as_ins,
             )
         )
-    (best_overall_option, best_overall_as_ins, best_rest_as_ins) = sorted(
-        options, key=lambda option: len(option[0]), reverse=True
+    (score, best_overall_option, best_overall_as_ins, best_rest_as_ins) = sorted(
+        options, key=lambda option: option[0], reverse=True
     )[0]
     return (best_overall_option, (best_overall_as_ins,) + best_rest_as_ins)
 
