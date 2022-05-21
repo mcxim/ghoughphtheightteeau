@@ -33,8 +33,10 @@ def parse_table():
     return table
 
 
-def sttretsch(word, max_len=float("inf")):
-    result, as_ins = perform_sttretsch(tuple(get_arpabet(word)), max_len, start=True)
+def ghoughphtheightteeau(word, max_len=float("inf")):
+    result, as_ins = perform_ghoughphtheightteeau(
+        tuple(get_arpabet(word)), max_len, start=True
+    )
     print(result, end="")
     print("".join("\n\t{}".format(as_in) for as_in in as_ins))
 
@@ -56,7 +58,7 @@ def get_example(phonemes_option, graphemes_option, match):
 
 
 @memoize
-def perform_sttretsch(phonemes, max_len, table=parse_table(), start=False):
+def perform_ghoughphtheightteeau(phonemes, max_len, table=parse_table(), start=False):
     if not len(phonemes):
         return ("", tuple())
     options = []
@@ -88,7 +90,9 @@ def perform_sttretsch(phonemes, max_len, table=parse_table(), start=False):
         best_option = sorted(
             best_options.items(), key=lambda item: item[1], reverse=True
         )[0][0]
-        best_rest, rest_as_ins = perform_sttretsch(phonemes[step_len:], max_len)
+        best_rest, rest_as_ins = perform_ghoughphtheightteeau(
+            phonemes[step_len:], max_len
+        )
         options.append(
             (
                 len(best_option + best_rest) + PREFER_BIGGER_STEPS * step_len,
@@ -108,4 +112,4 @@ def get_arpabet(word):
         return bfs.search(" ".join(list(word)))[0][1].split(" ")
 
 
-sttretsch(sys.argv[1])
+ghoughphtheightteeau(sys.argv[1])
