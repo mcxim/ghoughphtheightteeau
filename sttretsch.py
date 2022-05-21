@@ -6,7 +6,10 @@ from string import ascii_lowercase
 from collections import defaultdict
 import sys
 
-PREFER_BIGGER_STEPS = 0.3
+PREFER_BIGGER_STEPS = 1.0
+
+FORCE_END_MATCH = True
+FORCE_START_MATCH = True
 
 
 def lowercase_only(string):
@@ -31,7 +34,7 @@ def parse_table():
 
 
 def sttretsch(word, max_len=float("inf")):
-    result, as_ins = perform_sttretsch(tuple(get_arpabet(word)), max_len)
+    result, as_ins = perform_sttretsch(tuple(get_arpabet(word)), max_len, start=True)
     print(result, end="")
     print("".join("\n\t{}".format(as_in) for as_in in as_ins))
 
@@ -53,12 +56,19 @@ def get_example(phonemes_option, graphemes_option, match):
 
 
 @memoize
-def perform_sttretsch(phonemes, max_len, table=parse_table()):
+def perform_sttretsch(phonemes, max_len, table=parse_table(), start=False):
     if not len(phonemes):
         return ("", tuple())
     options = []
     for step_len in range(1, min(max_len, len(phonemes)) + 1):
         pattern = r"(^|\|)" + r".(_\|)*".join(phonemes[:step_len]) + r"\|"
+        if FORCE_END_MATCH:
+            if step_len == len(phonemes):
+                pattern += r"(?=(_\|)*$)"
+            else:
+                pattern += r"(?=[A-Z_])"
+        if FORCE_START_MATCH and start:
+            pattern = r"^" + pattern
         best_options, best_len = defaultdict(int), 0
         as_in = dict()
         for phonemes_option in table.keys():
@@ -73,6 +83,8 @@ def perform_sttretsch(phonemes, max_len, table=parse_table()):
                     best_len = len(example)
                     if example not in as_in:
                         as_in[example] = lowercase_only(graphemes_option)
+        if not best_options:
+            continue
         best_option = sorted(
             best_options.items(), key=lambda item: item[1], reverse=True
         )[0][0]
