@@ -37,8 +37,11 @@ def ghoughphtheightteeau(word, max_len=float("inf")):
     result, as_ins = perform_ghoughphtheightteeau(
         tuple(get_arpabet(word)), max_len, start=True
     )
-    print(result, end="")
+    print("The correct way to spell '{}'".format(word))
+    print("-" * (25 + len(word)), end="")
     print("".join("\n\t{}".format(as_in) for as_in in as_ins))
+    print("Then, the correct way to spell '{}' would be:\n'{}'".format(word, result))
+    return result
 
 
 def find_bars(string):
@@ -112,4 +115,11 @@ def get_arpabet(word):
         return bfs.search(" ".join(list(word)))[0][1].split(" ")
 
 
-ghoughphtheightteeau(sys.argv[1])
+if __name__ == "__main__":
+    if len(sys.argv) == 1:
+        print("USAGE: python3 ghoughphtheightteeau.py <word>")
+    if len(sys.argv) == 2:
+        ghoughphtheightteeau(sys.argv[1])
+    else:
+        print(" ".join(ghoughphtheightteeau(word) for word in sys.argv[1:]))
+    
